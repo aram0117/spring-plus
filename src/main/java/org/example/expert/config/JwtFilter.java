@@ -61,7 +61,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             String role = claims.get("userRole", String.class);
 
-            List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority(role));
+            List<GrantedAuthority> authorities = Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + role));
 
             User user = new User(email, "", authorities);
 
@@ -70,6 +70,12 @@ public class JwtFilter extends OncePerRequestFilter {
                     null,
                     user.getAuthorities()
             ));
+
+            String userId = claims.getSubject();
+
+            request.setAttribute("userId", userId);
+            request.setAttribute("email", email);
+            request.setAttribute("userRole", role);
 
             chain.doFilter(request, response);
 
@@ -87,8 +93,5 @@ public class JwtFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
-
-
-
 
 }
